@@ -1,7 +1,8 @@
+import 'package:book/helpers/text_style/custom_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../cubit/weather_cubit.dart';
+import '../cubit/weather_cubit.dart';
 
 class WeatherDescriptionWidget extends StatelessWidget {
   const WeatherDescriptionWidget({
@@ -13,10 +14,10 @@ class WeatherDescriptionWidget extends StatelessWidget {
     return BlocBuilder<WeatherCubit, WeatherState>(
       builder: (context, state) {
         if (state is WeatherLoadedState) {
+          final String description = state.weatherEntity!.weather!.description;
           return Text(
-            state.weatherEntity.weather!.main,
-            style: const TextStyle(
-                fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white),
+            description[0].toUpperCase() + description.substring(1),
+            style: CustomTextStyle.B1(context).copyWith(color: Colors.white),
           );
         } else {
           return Container();

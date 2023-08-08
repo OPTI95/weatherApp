@@ -13,8 +13,10 @@ class WeatherLoadingState extends WeatherState {}
 
 class WeatherLoadedState extends WeatherState {
   final WeatherEntity weatherEntity;
+  final List<WeatherForecastEntity> weatherForecastEntity;
+  final String city;
 
-  const WeatherLoadedState(this.weatherEntity);
+  const WeatherLoadedState(this.weatherEntity, this.weatherForecastEntity, this.city);
 }
 
 class WeatherErrorState extends WeatherState {

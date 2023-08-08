@@ -9,7 +9,9 @@ import 'package:book/features/weather/domain/entities/weather_entity.dart';
 
 import 'package:dartz/dartz.dart';
 
+import '../../domain/entities/weather_forecast_entity.dart';
 import '../../domain/repositories/weather_repository.dart';
+import '../models/weather_forecast_model.dart';
 
 typedef Future<WeatherModel> _CityOrCordinateChooser();
 
@@ -27,6 +29,14 @@ class WeatherRepositoryImpl extends WeatherRepository {
   Future<Either<Failure, WeatherEntity>> getWeatherCity(String city) async {
     return await _getWeather(() {
       return remoteDataSource.getWeatherCity(city);
+    });
+  }
+
+  @override
+  Future<Either<Failure, List<WeatherForecastEntity>>> getWeatherForecastCity(
+      CordinateEntity cordinateEntity) async {
+    return await _getForecastWeather(() {
+      return remoteDataSource.getWeatherForecastCity(cordinateEntity);
     });
   }
 
@@ -51,6 +61,26 @@ class WeatherRepositoryImpl extends WeatherRepository {
     } else {
       try {
         final localWeather = await localDataSource.getLastWeather();
+        return Right(localWeather);
+      } on CacheException {
+        return Left(CacheFailure());
+      }
+    }
+  }
+
+  Future<Either<Failure, List<WeatherForecastEntity>>> _getForecastWeather(
+      Future<List<WeatherForecastModel>> Function() remoteWeather) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final forecastModel = await remoteWeather();
+        localDataSource.cacheForecastWeather(forecastModel);
+        return Right(forecastModel);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      try {
+        final localWeather = await localDataSource.getLastForecastWeather();
         return Right(localWeather);
       } on CacheException {
         return Left(CacheFailure());

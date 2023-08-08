@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 
-import 'card_widget.dart';
+import 'card/card_widget.dart';
 
 class SliverCardWidget extends StatelessWidget {
   const SliverCardWidget({
@@ -14,7 +14,6 @@ class SliverCardWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(bottom: 20, right: 15, left: 15),
         child: SizedBox(
-          height: 540,
           width: MediaQuery.of(context).size.width,
           child: const CardWidget(),
         ),

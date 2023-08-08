@@ -1,3 +1,4 @@
+import 'package:book/helpers/text_style/custom_text_style.dart';
 import 'package:flutter/material.dart';
 
 class WeatherInfoInCardWidget extends StatelessWidget {
@@ -16,26 +17,31 @@ class WeatherInfoInCardWidget extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
       children: [
-        ImageIcon(AssetImage("images/" + iconName)),
+        ImageIcon(
+          AssetImage("images/" + iconName),
+          color: Colors.white,
+        ),
         const SizedBox(
           width: 10,
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              valueName,
-              style: const TextStyle(fontSize: 16, color: Colors.white),
-            ),
-            Text(
-              descriptionName,
-              style: const TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ],
-        )
+        SizedBox(
+          width: 70,
+          child: Text(
+            valueName,
+            style: CustomTextStyle.B2(context).copyWith(
+                color: Color.fromRGBO(255, 255, 255, 0.20),
+                fontWeight: FontWeight.w500),
+          ),
+        ),
+        const SizedBox(
+          width: 24,
+        ),
+        Text(
+          descriptionName,
+          style: CustomTextStyle.B2(context).copyWith(color: Colors.white),
+        ),
+        Spacer()
       ],
     );
   }

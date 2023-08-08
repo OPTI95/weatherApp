@@ -1,9 +1,11 @@
+import 'package:book/features/login/presentation/cubit/login_cubit.dart';
 import 'package:book/features/weather/data/datasources/weather_local_data_source.dart';
 import 'package:book/features/weather/data/datasources/weather_remote_data_source.dart';
 import 'package:book/features/weather/data/repositories/weather_repository_impl.dart';
 import 'package:book/features/weather/domain/repositories/weather_repository.dart';
 import 'package:book/features/weather/domain/usecases/get_weather_city.dart';
 import 'package:book/features/weather/domain/usecases/get_weather_cordinate.dart';
+import 'package:book/features/weather/domain/usecases/get_weather_forecast_city.dart';
 import 'package:book/features/weather/presentation/cubit/weather_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
@@ -20,12 +22,14 @@ Future<void> init() async {
     () => WeatherCubit(
       getWeatherCity: sl(),
       getWeatherCordinate: sl(),
+      getWeatherForecastCity: sl()
     ),
   );
 
   // Use cases
   sl.registerLazySingleton(() => GetWeatherCity(sl()));
   sl.registerLazySingleton(() => GetWeatherCordinate(sl()));
+  sl.registerLazySingleton(() => GetWeatherForecastCity(sl()));
 
   // Repository
   sl.registerLazySingleton<WeatherRepository>(

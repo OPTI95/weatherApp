@@ -1,14 +1,13 @@
+import 'package:book/helpers/text_style/custom_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import '../../../../helpers/country_code/country_code_convertor.dart';
 import '../cubit/weather_cubit.dart';
 
 class SliverAppBarWidget extends StatefulWidget {
   SliverAppBarWidget({
     super.key,
   });
-  bool isSearch = false;
-
   @override
   State<SliverAppBarWidget> createState() => _SliverAppBarWidgetState();
 }
@@ -16,25 +15,17 @@ class SliverAppBarWidget extends StatefulWidget {
 class _SliverAppBarWidgetState extends State<SliverAppBarWidget> {
   @override
   Widget build(BuildContext context) {
-    return SliverAppBar(actions: [
-      !widget.isSearch
-          ? const TextInAppBarWidget()
-          : Expanded(child: TextField(
-              onSubmitted: (value) async {
-                await fetchWeather(context, value);
-              },
-            )),
-      IconButton(
-          onPressed: () {
-            widget.isSearch = !widget.isSearch;
-            setState(() {});
-          },
-          icon: const Icon(Icons.location_on_sharp))
+    return SliverAppBar(backgroundColor: Colors.transparent, actions: [
+      SizedBox(
+        width: 24,
+      ),
+      ImageIcon(
+        AssetImage("images/icon-pin.png"),
+        color: Colors.white,
+      ),
+      const TextInAppBarWidget(),
+      Spacer()
     ]);
-  }
-
-  fetchWeather(BuildContext context, String value) async {
-    await context.read<WeatherCubit>().fetchWeatherCity(value.toString());
   }
 }
 
@@ -50,16 +41,29 @@ class TextInAppBarWidget extends StatelessWidget {
         if (state is WeatherLoadedState) {
           return Padding(
             padding: const EdgeInsets.only(left: 15),
-            child: Expanded(
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(
-                    state.weatherEntity.name,
-                    style: const TextStyle(fontSize: 24),
-                  ),
-                ],
-              ),
+            child: Row(
+              children: [
+                Text(
+                  state.weatherEntity!.name,
+                  style: CustomTextStyle.B2(context).copyWith(
+                      fontWeight: FontWeight.w500, color: Colors.white),
+                ),
+                FutureBuilder<String?>(
+                  future: _getCountryNameInRussian(
+                      state.weatherEntity!.sys.country),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Ошибка: ${snapshot.error}');
+                    } else {
+                      return Text(', ${snapshot.data}',
+                          style: CustomTextStyle.B2(context)
+                              .copyWith(color: Colors.white));
+                    }
+                  },
+                ),
+              ],
             ),
           );
         } else {
@@ -67,5 +71,15 @@ class TextInAppBarWidget extends StatelessWidget {
         }
       },
     );
+  }
+
+  Future<String?> _getCountryNameInRussian(String countryCode) async {
+    final countryInfo =
+        await Future.value(CountryCode.convertCountryCodeToName(countryCode));
+    if (countryInfo != "") {
+      return countryInfo;
+    } else {
+      return 'Не удалось найти страну';
+    }
   }
 }
